@@ -17,7 +17,7 @@ vex::motor backLeft = vex::motor(vex::PORT13, vex::gearSetting::ratio18_1, false
 vex::motor backRight = vex::motor(vex::PORT18, vex::gearSetting::ratio18_1, true);
 vex::motor frontLeft = vex::motor(vex::PORT11, vex::gearSetting::ratio18_1, false);
 vex::motor frontRight = vex::motor(vex::PORT20, vex::gearSetting::ratio18_1, true);
-vex::motor armLift = vex::motor(vex::PORT1, vex::gearSetting::ratio36_1, false);
+vex::motor armLift = vex::motor(vex::PORT1, vex::gearSetting::ratio36_1, true);
 vex::motor pivot = vex::motor(vex::PORT8, vex::gearSetting::ratio36_1, true);
 vex::motor intake1 = vex::motor(vex::PORT3, vex::gearSetting::ratio18_1, false);
 vex::motor intake2 = vex::motor(vex::PORT5, vex::gearSetting::ratio18_1, true);
@@ -36,9 +36,9 @@ void stopAllMotors(){ // A method used to stop every motor, used in autonomous p
 }
 
 void driverDriveControl(){ // Controls the drive train movement during the autonomous period. Arcade style movement on right joystick.
-  if((abs(Controller1.Axis1.value()) > controllerTollerance) || (abs(Controller1.Axis2.value()) > controllerTollerance)){
-    int leftSideValue = Controller1.Axis2.value() + Controller1.Axis1.value();
-    int rightSideValue = Controller1.Axis2.value() - Controller1.Axis1.value();
+  if((abs(Controller1.Axis4.value()) > controllerTollerance) || (abs(Controller1.Axis3.value()) > controllerTollerance)){
+    int leftSideValue = Controller1.Axis3.value() + Controller1.Axis4.value();
+    int rightSideValue = Controller1.Axis3.value() - Controller1.Axis4.value();
     backLeft.spin(vex::directionType::fwd, leftSideValue, vex::velocityUnits::pct);
     frontLeft.spin(vex::directionType::fwd, leftSideValue, vex::velocityUnits::pct);
     backRight.spin(vex::directionType::fwd, rightSideValue, vex::velocityUnits::pct);
@@ -53,9 +53,9 @@ void driverDriveControl(){ // Controls the drive train movement during the auton
 
 void driverpivotControl(){ // Controls the pivot (ramp) on the right side analog buttons.
   if(Controller1.ButtonR1.pressing()){
-    pivot.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+    pivot.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
   } else if (Controller1.ButtonR2.pressing()){
-    pivot.spin(vex::directionType::fwd, -100, vex::velocityUnits::pct);
+    pivot.spin(vex::directionType::fwd, -50, vex::velocityUnits::pct);
   } else {
     pivot.stop(vex::brakeType::coast);
   }
@@ -68,6 +68,9 @@ void driverIntakeControl(){ // Controls the flapped intake on the left side anal
   } else if (Controller1.ButtonL2.pressing()){
     intake1.spin(vex::directionType::fwd, -100, vex::velocityUnits::pct);
     intake2.spin(vex::directionType::fwd, -100, vex::velocityUnits::pct);
+  } else if (Controller1.ButtonX.pressing()) {
+    intake1.spin(vex::directionType::fwd, -25, vex::velocityUnits::pct);
+    intake2.spin(vex::directionType::fwd, -25, vex::velocityUnits::pct);
   } else {
     intake1.stop(vex::brakeType::hold);
     intake2.stop(vex::brakeType::hold);
@@ -77,7 +80,7 @@ void driverIntakeControl(){ // Controls the flapped intake on the left side anal
 void driverArmLiftControl(){ // Controls the arm of the robot using the left side joystick.
   int axisValue = Controller1.Axis4.value();
   if(axisValue > controllerTollerance || axisValue < controllerTollerance){
-    armLift.spin(vex::directionType::fwd, controllerTollerance, vex::velocityUnits::pct);
+    armLift.spin(vex::directionType::fwd, axisValue, vex::velocityUnits::pct);
     } else {
     armLift.stop(vex::brakeType::hold);
   }
